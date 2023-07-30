@@ -1,48 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:todo/modules/Archive.dart';
+import 'package:todo/modules/Done.dart';
+import 'package:todo/modules/Tasks.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
-
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  int x = 1;
-  late Database db;
-  List<Widget> Screens = [
-    Center(child: Text("TASKS")),
-    Center(child: Text("ADD NEW TASK")),
-    Center(child: Text("ARCHIVE")),
-  ];
+  int currentModules = 0;
+  List<Widget> Modules = [Tasks(), DoneTasks(), ArchiveTasks()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(child: Text("To Do List")),
-      ),
-      body: Screens[x],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.edit),
-      ),
+      appBar: AppBar(),
+      body: Modules[currentModules],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: x,
+        currentIndex: currentModules,
         onTap: (index) {
           setState(() {
-            x = index;
+            currentModules = index;
           });
         },
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.task_alt_outlined),
-            label: "Task",
+            icon: Icon(Icons.task_alt),
+            label: "Tasks",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_task),
-            label: "Add",
+            icon: Icon(Icons.done_outline),
+            label: "Completed",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.archive_outlined),
@@ -50,37 +39,6 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class DBClass {
-  late Database db;
-
-  DBClass() {
-    intiDB();
-  }
-
-  void intiDB() async {
-    db = await openDatabase(
-      "todo.db",
-      version: 1,
-      onCreate: (dbase, v) async {
-        await dbase.execute(
-          "CREATE TABLE Test "
-          "(id INTEGER PRIMARY KEY, title TEXT,date TEXT,status INTEGER)",
-        );
-      },
-      onOpen: (db) {},
-    );
-  }
-
-  void insertDB(List<dynamic> values) async {
-    await db.transaction(
-      (txn) async {
-        await txn.rawInsert(
-            'INSERT INTO Test(name, value, num) VALUES(?, ?, ?)', values);
-      },
     );
   }
 }
